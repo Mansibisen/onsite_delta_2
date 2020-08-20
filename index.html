@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/mathjs@7.1.0/dist/math.min.js"></script>
+</head>
+<style>
+    html{
+        background-color:#b8c0c8;
+
+    }
+    #canvas{
+        background-color: white;
+    }
+    #label{
+        font-size: 25px;
+    }
+    #button{
+        background-color:#3e3d53;
+	   color: honeydew;
+	   
+	   cursor: pointer;
+	   font-size: 20px;
+	
+	  
+	   padding: 10px 14px;
+	   margin: 4px 0;
+	   border: none;
+	   border-radius: 1px;
+    }
+</style>
+<body>
+    <h3>Enter the f(x) where y = f(x) </h3>
+    <form id = "inputfeild">
+        <label id = "label" >Enter the equation:</label>
+        <input type = "text" id = "text" value = "sin(x) "/>
+        <input type = "submit" value = "Plot" id = "button" /><br><br><br>
+        <canvas id = "canvas" height= "800" width="1600"></canvas>
+
+    </form>
+    
+</body>
+<script>
+    function draw(xvalues,yvalues){
+        var xPadding = 30;
+    var yPadding = 30;
+
+    var data = {
+        values : [{
+                X : "1",
+                Y : 15
+            }, {
+                X : "2",
+                Y : 35
+            }, {
+                X : "3",
+                Y : 60
+            }, {
+                X : "4",
+                Y : 14
+            }, {
+                X : "5",
+                Y : 20
+            }, {
+                X : "6",
+                Y : -30
+            },
+        ]
+    };
+    
+    
+   /*var data = {
+       values : [
+           {X:"-10",
+           Y:10},
+           {X:"-9.5",
+           Y:60},
+           {X:"-9",
+           Y:45},
+           {X:"-8.5",
+           Y:56},
+           {X:"-8",
+           Y:23},
+           {X:"-7.5",
+           Y:100},
+           {X:"-7",
+           Y:30},
+           {X:"-6.5",
+           Y:35},
+           {X:"-6",
+           Y:40},
+           {X:"-5.5",
+           Y:49},
+           {X:"-5",
+           Y:32},
+           {X:"-4.5",
+           Y:70},
+           {X:"-4",
+           Y:80},
+           {X:"-3.5",
+           Y:90},
+           {X:"-3",
+           Y:15},
+           {X:"-2.5",
+           Y:25},
+           {X:"-2",
+           Y:55},
+           {X:"-1.5",
+           Y:65},
+           {X:"-1",
+           Y:85},
+           {X:"-0.5",
+           Y:95},
+           {X:"0",
+           Y:75},
+           {X:"0.5",
+           Y:10},
+           {X:"1",
+           Y:60},
+           {X:"1.5",
+           Y:45},
+           {X:"2",
+           Y:56},
+           {X:"2.5",
+           Y:23},
+           {X:"3",
+           Y:100},
+           {X:"3.5",
+           Y:30},
+           {X:"4",
+           Y:35},
+           {X:"4.5",
+           Y:40},
+           {X:"5",
+           Y:49},
+           {X:"5.5",
+           Y:32},
+           {X:"6",
+           Y:70},
+           {X:"6.5",
+           Y:80},
+           {X:"7",
+           Y:90},
+           {X:"7.5",
+           Y:15},
+           {X:"8",
+           Y:25},
+           {X:"8.5",
+           Y:55},
+           {X:"9",
+           Y:65},
+           {X:"9.5",
+           Y:85},
+           
+
+
+       ]
+   }*/
+
+    // Returns the max Y value in our data list
+    function getMaxY() {
+        var max = 0;
+
+        for (var i = 0; i < data.values.length; i++) {
+            if (data.values[i].Y > max) {
+                max = data.values[i].Y;
+            }
+        }
+
+        max += 10 - max % 10;
+        return max;
+    }
+    var scaleA = 1.4;
+    // Return the x pixel for a graph point
+    function getXPixel(val) {
+        return ((graph.width / scaleA  - xPadding) / data.values.length) * val + (xPadding * 1.5);
+    }
+
+    // Return the y pixel for a graph point
+    function getYPixel(val) {
+        return graph.height / scaleA  - (((graph.height / scaleA  - yPadding) / getMaxY()) * val) - yPadding;
+    }
+
+    graph = document.getElementById("canvas")
+    var c = graph.getContext('2d');
+    c.clearRect(0,0,graph.width,graph.height);
+    c.lineWidth = 2;
+    c.strokeStyle = '#333';
+    c.font = 'italic 8pt sans-serif'; 
+    c.textAlign = "center";
+
+    // Draw the axises
+    c.beginPath();
+    c.moveTo(xPadding, 0);
+    c.lineTo(xPadding, graph.height/ scaleA  - yPadding);
+    c.lineTo(graph.width, graph.height / scaleA  - yPadding);
+    c.stroke();
+
+    /*c.beginPath();
+    c.moveTo(graph.width/2,graph.height/2);
+    c.lineTo(graph.width/2, 0);
+    c.moveTo(graph.width/2,graph.height/2);
+    c.lineTo(graph.width/2, graph.height);
+    c.moveTo(graph.width/2,graph.height/2);
+    c.lineTo(graph.width,graph.height/2);
+    c.moveTo(graph.width/2,graph.height/2);
+    c.lineTo(0,graph.height/2);*/
+
+
+    //c.lineTo(graph.width, graph.height / scaleA  - yPadding);
+    c.stroke();
+
+    // Draw the X value texts
+    for (var i = 0; i < data.values.length; i++) {
+        c.fillText(data.values[i].X, getXPixel(i), graph.height / scaleA  - yPadding + 20);
+        //c.fillText(data.values[i].X ,getXPixel(i),graph.height/2)
+    }
+
+    // Draw the Y value texts
+    c.textAlign = "right"
+    c.textBaseline = "middle";
+
+    for (var i = 0; i < getMaxY(); i += 10) {
+        //c.fillText(i, graph.width/2, getYPixel(i));
+        c.fillText(i, xPadding - 10, getYPixel(i));
+    }
+
+    c.strokeStyle = '#f00';
+
+    // Draw the line graph
+    c.beginPath();
+    c.moveTo(getXPixel(xvalues[20]), getYPixel(yvalues[20]));
+    for (var i = 21; i < 41; i++) {
+        c.lineTo(getXPixel(xvalues[i]), getYPixel(yvalues[i]));
+    }
+    c.stroke();
+
+    // Draw the dots
+    c.fillStyle = '#333';
+
+    for (var i = 21; i < 41; i++) {
+        c.beginPath();
+        c.arc(getXPixel(xvalues[i]), getYPixel(yvalues[i]), 4, 0, Math.PI * 2, true);
+        c.fill();
+    }
+}
+
+   
+    
+    
+    
+    function plot(){
+        try{
+            const data = document.getElementById("text").value
+            const expression = math.compile(data)
+            const xvalues = math.range(-10,10,0.5).toArray()
+            console.log(xvalues)
+            const yvalues = xvalues.map(function(x){
+                return expression.evaluate({x:x})
+            })
+            draw(xvalues,yvalues)
+            
+            
+        }
+        catch(err){
+            alert(err)
+        }
+
+    }
+    document.getElementById("inputfeild").onsubmit = function (event) {
+        event.preventDefault()
+        plot()
+        }
+    plot()
+    
+</script>
+</html>
